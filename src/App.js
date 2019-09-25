@@ -24,11 +24,10 @@ class App extends React.Component {
 
 
 
-  startAudio(e) {
+  startAudio = (e) => {
     e.preventDefault();
     console.log('The link was clicked.');
 
-debugger;
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({audio: true}).then((stream) => {
@@ -40,7 +39,7 @@ debugger;
   }
 
 
-  createAudioMeter(audioContext, clipLevel, averaging, clipLag) {
+  createAudioMeter = (audioContext, clipLevel, averaging, clipLag) => {
     const processor = audioContext.createScriptProcessor(512)
     processor.onaudioprocess = this.volumeAudioProcess
     processor.clipping = false
@@ -72,7 +71,7 @@ debugger;
     return processor
   }
 
-  volumeAudioProcess(event) {
+  volumeAudioProcess = (event) => {
     const buf = event.inputBuffer.getChannelData(0)
     const bufLength = buf.length
     let sum = 0
@@ -94,7 +93,12 @@ debugger;
     // Now smooth this out with the averaging factor applied
     // to the previous sample - take the max here because we
     // want "fast attack, slow release."
-    this.volume = Math.max(rms, this.volume * this.averaging)
+    this.setState({
+      volume: Math.max(rms, this.state.volume * this.meter.averaging)
+    });
+
+    // debugger;
+    // console.log(this.state.volume)
     // document.getElementById('audio-value').innerHTML = this.volume
   }
 
@@ -114,7 +118,7 @@ debugger;
             </Row>
         </Container>
         <Container className="visualization-container">
-          <h1>{this.volume}</h1>
+          <h1>{this.state.volume}</h1>
         </Container>
       </div>
     );
